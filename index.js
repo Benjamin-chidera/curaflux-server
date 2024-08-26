@@ -26,12 +26,7 @@ app.use(
   })
 );
 
-app.use(
-  cors({
-    origin: "http://localhost:5173", // Replace with your frontend's origin
-    credentials: true, // This allows cookies to be sent/received
-  })
-);
+app.use(cors());
 
 app.use(passport.initialize());
 app.use(passport.session());
