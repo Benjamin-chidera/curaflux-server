@@ -41,11 +41,12 @@ app.use(
   cors({
     origin:
       process.env.NODE_ENV === "production"
-        ? "https://curaflux.vercel.app"
+        ? "https://your-frontend-domain.com"
         : "http://localhost:5173",
-    credentials: true,
+    credentials: true, // Allow cookies to be sent
   })
 );
+
 
 app.use(passport.initialize());
 app.use(cookieParser());

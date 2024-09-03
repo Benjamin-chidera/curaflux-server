@@ -141,15 +141,15 @@ export const googleAuthCallback = (req, res) => {
     }
   );
 
-  res.cookie("token", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production", // Set secure flag based on the environment
-    maxAge: 3600000, // 1 hour
-    domain:
-      process.env.NODE_ENV === "production"
-        ? "curaflux.vercel.app"
-        : "localhost",
-  });
+ res.cookie("token", token, {
+   httpOnly: true,
+   secure: process.env.NODE_ENV === "production", // Secure in production
+   maxAge: 3600000,
+   domain:
+     process.env.NODE_ENV === "production" ? ".yourdomain.com" : "localhost",
+   sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+ });
+
 
   console.log("JWT Token:", token);
 
