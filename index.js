@@ -12,20 +12,8 @@ const PORT = 3000;
 const app = express();
 dotenv.config();
 
-// Trust proxy if in production
-if (process.env.NODE_ENV === 'production') {
-  app.set('trust proxy', 1);
-}
-
 app.use(express.json());
 app.use(cookieParser());
-
-app.use(
-  cors({
-    origin: process.env.FRONTEND_URL,
-    credentials: true,
-  })
-);
 
 app.use(
   session({
@@ -37,6 +25,13 @@ app.use(
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
       httpOnly: true, // Ensure cookies are not accessible via JavaScript
     },
+  })
+);
+
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
   })
 );
 
