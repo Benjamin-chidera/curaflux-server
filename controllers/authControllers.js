@@ -113,7 +113,7 @@ export const googleAuthCallback = (req, res) => {
 
   console.log("Setting cookie:", token);
   res.cookie("token", token, {
-    httpOnly: true,
+    // httpOnly: true,
     secure: true, // Always use secure for production and development
     sameSite: "none", // This allows the cookie to be sent in cross-site requests
     domain: frontendDomain,
