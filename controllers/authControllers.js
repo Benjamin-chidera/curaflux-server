@@ -92,6 +92,40 @@ export const googleAuth = (req, res) => {
   res.redirect("/auth/google");
 };
 
+
+// export const googleAuthCallback = (req, res) => {
+//   const token = jwt.sign(
+//     {
+//       id: req.user._id,
+//       firstName: req.user.firstName,
+//       lastName: req.user.lastName,
+//       role: req.user.role,
+//       email: req.user.email,
+//     },
+//     process.env.JWT_SECRET,
+//     {
+//       expiresIn: "1h",
+//     }
+//   );
+
+//   res.cookie("token", token, {
+//     // httpOnly: true,
+//     secure: process.env.NODE_ENV === "production",
+//     maxAge: 3600000, // 1 hour
+//     // domain: "https://curaflux.vercel.app",
+//   });
+
+//   console.log(token);
+  
+
+//   // res.json({ message: "Successful", token });
+
+//   // res.status(200).json({ message: "Successful login", token });
+
+//   res.redirect("http://localhost:5173/admin"); // Redirect to your client-side dashboard
+//   // res.redirect("http://localhost:5173/admin"); // Redirect to your client-side dashboard
+// };
+
 export const googleAuthCallback = (req, res) => {
   const token = jwt.sign(
     {
@@ -107,19 +141,24 @@ export const googleAuthCallback = (req, res) => {
     }
   );
 
-  const frontendDomain = "https://curaflux.vercel.app";
-  const testUrl = "localhost:3000";
-
-  console.log("Setting cookie:", token);
   res.cookie("token", token, {
-    // httpOnly: true,
-    secure: true, // Always use secure for production and development
-    sameSite: "none", // This allows the cookie to be sent in cross-site requests
-    domain: frontendDomain,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production", // Set secure flag based on the environment
     maxAge: 3600000, // 1 hour
+    domain:
+      process.env.NODE_ENV === "production"
+        ? "https://curaflux.vercel.app"
+        : "localhost",
+    sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax", // Use 'None' for cross-site cookie in production
   });
-  console.log("Cookie set, redirecting...");
 
-  res.redirect(`${frontendDomain}/admin`);
-  // res.redirect(`http://${testUrl}/admin`);
+  console.log("JWT Token:", token);
+
+  // Redirect to client-side dashboard based on environment
+  const redirectUrl =
+    process.env.NODE_ENV === "production"
+      ? "https://curaflux.vercel.app/admin"
+      : "http://localhost:5173/admin";
+
+  res.redirect(redirectUrl);
 };
