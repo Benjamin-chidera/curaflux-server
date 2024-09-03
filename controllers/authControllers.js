@@ -122,7 +122,8 @@ export const googleAuthCallback = (req, res) => {
 
   // res.status(200).json({ message: "Successful login", token });
 
-  res.redirect("http://localhost:5173/admin"); // Redirect to your client-side dashboard
+  res.redirect("https://curaflux.vercel.app/admin"); // Redirect to your client-side dashboard
+  // res.redirect("http://localhost:5173/admin"); // Redirect to your client-side dashboard
 };
 
 export const facebookAuth = (req, res) => {
