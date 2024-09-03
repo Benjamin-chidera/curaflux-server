@@ -108,18 +108,19 @@ export const googleAuthCallback = (req, res) => {
     }
   );
 
+  const frontendDomain = "curaflux.vercel.app"; 
+  const testUrl = "http://localhost:3000"
+
+  console.log("Setting cookie:", token);
   res.cookie("token", token, {
-    // httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    httpOnly: true,
+    secure: true, // Always use secure for production and development
+    sameSite: "none", // This allows the cookie to be sent in cross-site requests
+    domain: frontendDomain,
     maxAge: 3600000, // 1 hour
-    domain: "https://curaflux.vercel.app",
   });
+  console.log("Cookie set, redirecting...");
 
-  // res.json({ message: "Successful", token });
-
-  // res.status(200).json({ message: "Successful login", token });
-
-  res.redirect("https://curaflux.vercel.app/admin"); // Redirect to your client-side dashboard
-  // res.redirect("http://localhost:5173/admin"); // Redirect to your client-side dashboard
+  res.redirect(`https://${frontendDomain}/admin`);
 };
 
