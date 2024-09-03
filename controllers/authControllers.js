@@ -92,7 +92,6 @@ export const googleAuth = (req, res) => {
   res.redirect("/auth/google");
 };
 
-
 export const googleAuthCallback = (req, res) => {
   const token = jwt.sign(
     {
@@ -108,8 +107,8 @@ export const googleAuthCallback = (req, res) => {
     }
   );
 
-  const frontendDomain = "curaflux.vercel.app"; 
-  const testUrl = "http://localhost:3000"
+  const frontendDomain = "https://curaflux.vercel.app";
+  const testUrl = "localhost:3000";
 
   console.log("Setting cookie:", token);
   res.cookie("token", token, {
@@ -121,6 +120,6 @@ export const googleAuthCallback = (req, res) => {
   });
   console.log("Cookie set, redirecting...");
 
-  res.redirect(`https://${frontendDomain}/admin`);
+  res.redirect(`${frontendDomain}/admin`);
+  // res.redirect(`http://${testUrl}/admin`);
 };
-
