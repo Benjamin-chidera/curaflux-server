@@ -147,9 +147,8 @@ export const googleAuthCallback = (req, res) => {
     maxAge: 3600000, // 1 hour
     domain:
       process.env.NODE_ENV === "production"
-        ? "https://curaflux.vercel.app"
+        ? "curaflux.vercel.app"
         : "localhost",
-    sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax", // Use 'None' for cross-site cookie in production
   });
 
   console.log("JWT Token:", token);

@@ -12,7 +12,13 @@ const PORT = 3000;
 const app = express();
 dotenv.config();
 
+// Add the trust proxy setting
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
+
 app.use(express.json());
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
@@ -20,13 +26,26 @@ app.use(
     saveUninitialized: false,
     cookie: {
       secure: process.env.NODE_ENV === "production",
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      httpOnly: true, // Ensure cookies are not accessible via JavaScript
+      maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      domain:
+        process.env.NODE_ENV === "production"
+          ? "curaflux.vercel.app"
+          : "localhost",
     },
   })
 );
 
-app.use(cors());
+app.use(
+  cors({
+    origin:
+      process.env.NODE_ENV === "production"
+        ? "https://curaflux.vercel.app"
+        : "http://localhost:5173",
+    credentials: true,
+  })
+);
 
 app.use(passport.initialize());
 app.use(cookieParser());
