@@ -13,6 +13,8 @@ const app = express();
 dotenv.config();
 
 app.use(express.json());
+app.use(cookieParser());
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
@@ -26,11 +28,17 @@ app.use(
   })
 );
 
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  })
+);
+
 
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(cookieParser());
+
 
 app.get("/", (req, res) => {
   res.send("home page");
