@@ -37,7 +37,7 @@ export const signUp = async (req, res) => {
     );
 
     res.cookie("token", token, {
-      httpOnly: true,
+      // httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 3600000, // 1 hour
     });
@@ -77,7 +77,7 @@ export const signIn = async (req, res) => {
     );
 
     res.cookie("token", token, {
-      httpOnly: true,
+      // httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 3600000, // 1 hour
     });
@@ -113,7 +113,7 @@ export const googleAuthCallback = (req, res) => {
   );
 
   res.cookie("token", token, {
-    httpOnly: true,
+    // httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     maxAge: 3600000, // 1 hour
   });
@@ -126,36 +126,36 @@ export const googleAuthCallback = (req, res) => {
   // res.redirect("http://localhost:5173/admin"); // Redirect to your client-side dashboard
 };
 
-export const facebookAuth = (req, res) => {
-  res.redirect("/auth/facebook");
-};
+// export const facebookAuth = (req, res) => {
+//   res.redirect("/auth/facebook");
+// };
 
-export const facebookAuthCallback = (req, res) => {
-  const token = jwt.sign(
-    {
-      id: req.user._id,
-      firstName: req.user.firstName,
-      lastName: req.user.lastName,
-      role: req.user.role,
-      email: req.user.email,
-    },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: "1h",
-    }
-  );
+// export const facebookAuthCallback = (req, res) => {
+//   const token = jwt.sign(
+//     {
+//       id: req.user._id,
+//       firstName: req.user.firstName,
+//       lastName: req.user.lastName,
+//       role: req.user.role,
+//       email: req.user.email,
+//     },
+//     process.env.JWT_SECRET,
+//     {
+//       expiresIn: "1h",
+//     }
+//   );
 
-  res.cookie("token", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    maxAge: 3600000, // 1 hour
-  });
+//   res.cookie("token", token, {
+//     httpOnly: true,
+//     secure: process.env.NODE_ENV === "production",
+//     maxAge: 3600000, // 1 hour
+//   });
 
-  // res.json({ message: "Successful", token });
+//   // res.json({ message: "Successful", token });
 
-  // res.status(200).json({ message: "Successful login", token });
+//   // res.status(200).json({ message: "Successful login", token });
 
-  res.redirect("https://curaflux.vercel.app/admin"); // Redirect to your client-side dashboard
-  // res.redirect("http://localhost:5173/admin"); // Redirect to your client-side dashboard
-};
-// http://curaflux-server.onrender.com/auth/google/callback
+//   res.redirect("https://curaflux.vercel.app/admin"); // Redirect to your client-side dashboard
+//   // res.redirect("http://localhost:5173/admin"); // Redirect to your client-side dashboard
+// };
+// // http://curaflux-server.onrender.com/auth/google/callback
