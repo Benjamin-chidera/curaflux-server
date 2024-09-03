@@ -36,13 +36,13 @@ export const signUp = async (req, res) => {
       }
     );
 
-    // res.cookie("token", token, {
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === "production",
-    //   maxAge: 3600000, // 1 hour
-    // });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 3600000, // 1 hour
+    });
 
-    res.status(201).json({ message: "Successful registration", token });
+    // res.status(201).json({ message: "Successful registration", token });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
@@ -76,13 +76,13 @@ export const signIn = async (req, res) => {
       }
     );
 
-    // res.cookie("token", token, {
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === "production",
-    //   maxAge: 3600000, // 1 hour
-    // });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 3600000, // 1 hour
+    });
 
-    res.status(200).json({ message: "Successful login", token });
+    // res.status(200).json({ message: "Successful login", token });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
@@ -112,15 +112,15 @@ export const googleAuthCallback = (req, res) => {
     }
   );
 
-  // res.cookie("token", token, {
-  //   httpOnly: true,
-  //   secure: process.env.NODE_ENV === "production",
-  //   maxAge: 3600000, // 1 hour
-  // });
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 3600000, // 1 hour
+  });
 
   // res.json({ message: "Successful", token });
 
-  res.status(200).json({ message: "Successful login", token });
+  // res.status(200).json({ message: "Successful login", token });
 
   res.redirect("http://localhost:5173/admin"); // Redirect to your client-side dashboard
 };
@@ -144,15 +144,17 @@ export const facebookAuthCallback = (req, res) => {
     }
   );
 
-  // res.cookie("token", token, {
-  //   httpOnly: true,
-  //   secure: process.env.NODE_ENV === "production",
-  //   maxAge: 3600000, // 1 hour
-  // });
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 3600000, // 1 hour
+  });
 
   // res.json({ message: "Successful", token });
 
-  res.status(200).json({ message: "Successful login", token });
+  // res.status(200).json({ message: "Successful login", token });
 
-  res.redirect("http://localhost:5173/admin"); // Redirect to your client-side dashboard
+  res.redirect("https://curaflux.vercel.app/admin"); // Redirect to your client-side dashboard
+  // res.redirect("http://localhost:5173/admin"); // Redirect to your client-side dashboard
 };
+// http://curaflux-server.onrender.com/auth/google/callback
