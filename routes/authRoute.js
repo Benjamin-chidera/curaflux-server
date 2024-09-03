@@ -5,8 +5,8 @@ import {
   signIn,
   googleAuth,
   googleAuthCallback,
-  facebookAuth,
-  facebookAuthCallback,
+  // facebookAuth,
+  // facebookAuthCallback,
 } from "../controllers/authControllers.js";
 
 const router = Router();
@@ -25,15 +25,15 @@ router.get(
   googleAuthCallback
 );
 
-router.get(
-  "/facebook",
-  passport.authenticate("facebook", { scope: ["profile", "email"] })
-);
+// router.get(
+//   "/facebook",
+//   passport.authenticate("facebook", { scope: ["profile", "email"] })
+// );
 
-router.get(
-  "/facebook/callback",
-  passport.authenticate("facebook", { failureRedirect: "/" }),
-  facebookAuthCallback
-);
+// router.get(
+//   "/facebook/callback",
+//   passport.authenticate("facebook", { failureRedirect: "/" }),
+//   facebookAuthCallback
+// );
 
 export default router;
