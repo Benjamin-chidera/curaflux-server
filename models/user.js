@@ -7,18 +7,22 @@ const UserSchema = new Schema(
     email: { type: String, required: true, unique: true },
     password: {
       type: String,
-      required: function () {
-        return !this.googleId && !this.facebookId;
-      },
     },
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
+    fullName: { type: String, required: true },
+    nickName: { type: String, required: true },
+    birthdate: { type: String, required: true },
+    gender: { type: String, required: true },
     photo: {
       type: String,
       default:
         "https://images.pexels.com/photos/2324837/pexels-photo-2324837.jpeg?auto=compress&cs=tinysrgb&w=600",
     },
     role: { type: String, enum: ["user", "admin"], default: "user" },
+    phoneNumber: { type: String },
+    linkedInUrl: { type: String },
+    identificationType: { type: String },
+    identificationNumber: { type: String },
+    identificationDocument: { type: String },
   },
   {
     timestamps: true,
