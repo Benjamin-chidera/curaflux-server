@@ -5,7 +5,7 @@ import cors from "cors";
 import authRoutes from "./routes/authRoute.js";
 import { errorHandler } from "./middleware/errorHandlers.js";
 import { v2 as cloudinary } from "cloudinary";
-import fileupload from "express-fileupload"
+import fileupload from "express-fileupload";
 
 const PORT = 3000;
 const app = express();
@@ -26,15 +26,16 @@ app.use(
   })
 );
 
-app.use(
-  cors({
-    origin:
-      process.env.NODE_ENV === "production"
-        ? "https://your-frontend-domain.com"
-        : "http://localhost:5173",
-    credentials: true, // Allow cookies to be sent
-  })
-);
+app.use(cors());
+// app.use(
+//   cors({
+//     origin:
+//       process.env.NODE_ENV === "production"
+//         ? "https://your-frontend-domain.com"
+//         : "http://localhost:5173",
+//     credentials: true, // Allow cookies to be sent
+//   })
+// );
 
 app.get("/", (req, res) => {
   res.send("home page");
