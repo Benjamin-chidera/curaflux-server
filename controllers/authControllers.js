@@ -74,7 +74,7 @@ export const signIn = expressAsyncHandler(async (req, res) => {
     return res.status(400).json({ message: "User not found" });
   }
 
-  const isPasswordCorrect =  bcrypt.compare(password, user.password);
+  const isPasswordCorrect = bcrypt.compare(password, user.password);
   if (!isPasswordCorrect) {
     return res.status(400).json({ message: "Invalid credentials" });
   }
@@ -96,7 +96,7 @@ export const signIn = expressAsyncHandler(async (req, res) => {
     }
   );
 
-  res.status(200).json({ message: "Successful login", token });
+  res.status(200).json({ message: "Successful login", token, success: true });
 });
 
 // Generate OTP
