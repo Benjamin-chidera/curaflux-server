@@ -259,3 +259,16 @@ export const verify = expressAsyncHandler(async (req, res) => {
       .json({ success: false, error: "Failed to update user details" });
   }
 });
+
+export const getUsers = expressAsyncHandler(async (req, res) => {
+  const user = await User.find();
+
+  res.status(200).json({ success: true, user });
+});
+
+export const getAUsers = expressAsyncHandler(async (req, res) => {
+  const { userId } = req.params;
+  const user = await User.findById({ _id: userId });
+
+  res.status(200).json({ success: true, user });
+});

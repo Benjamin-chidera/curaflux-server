@@ -6,6 +6,8 @@ import {
   verifyOTP,
   resendOtp,
   verify,
+  getAUsers,
+  getUsers,
 } from "../controllers/authControllers.js";
 
 const router = Router();
@@ -15,6 +17,8 @@ router.post("/signin", signIn);
 router.post("/verify-otp", verifyOTP);
 router.post("/resend-otp", resendOtp);
 router.patch("/verify/:userId", verify);
+router.get("/users", getUsers);
+router.get("/user/:userId", getAUsers);
 
 export default router;
 
