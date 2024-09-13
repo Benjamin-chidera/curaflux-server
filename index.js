@@ -28,13 +28,7 @@ app.use(
 );
 
 app.use(
-  cors({
-    origin:
-      process.env.NODE_ENV === "production"
-        ? "https://your-frontend-domain.com"
-        : "http://localhost:5173",
-    credentials: true, // Allow cookies to be sent
-  })
+  cors()
 );
 
 app.get("/", (req, res) => {
