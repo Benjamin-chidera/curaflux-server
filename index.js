@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 import authRoutes from "./routes/authRoute.js";
+import hospitalRoute from "./routes/hospitalRoute.js";
 import { errorHandler } from "./middleware/errorHandlers.js";
 import { v2 as cloudinary } from "cloudinary";
 import fileupload from "express-fileupload";
@@ -26,21 +27,21 @@ app.use(
   })
 );
 
-app.use(cors());
-// app.use(
-//   cors({
-//     origin:
-//       process.env.NODE_ENV === "production"
-//         ? "https://your-frontend-domain.com"
-//         : "http://localhost:5173",
-//     credentials: true, // Allow cookies to be sent
-//   })
-// );
+app.use(
+  cors({
+    origin:
+      process.env.NODE_ENV === "production"
+        ? "https://your-frontend-domain.com"
+        : "http://localhost:5173",
+    credentials: true, // Allow cookies to be sent
+  })
+);
 
 app.get("/", (req, res) => {
   res.send("home page");
 });
 app.use("/auth", authRoutes);
+app.use("/hospital", hospitalRoute);
 
 const startServer = async () => {
   try {
