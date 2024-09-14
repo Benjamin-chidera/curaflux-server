@@ -61,7 +61,9 @@ export const signUp = expressAsyncHandler(async (req, res) => {
   // Generate and send OTP after saving user details
   await sendOTP(email);
 
-  res.status(201).json({ message: "Successful registration", token });
+  res
+    .status(201)
+    .json({ success: true, message: "Successful registration", token });
 });
 
 // Sign In Handler
