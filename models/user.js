@@ -23,6 +23,7 @@ const UserSchema = new Schema(
     identificationType: { type: String },
     identificationNumber: { type: String },
     identificationDocument: { type: String },
+    // profile: { type: String },
   },
   {
     timestamps: true,

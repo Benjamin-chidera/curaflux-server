@@ -202,8 +202,8 @@ export const verify = expressAsyncHandler(async (req, res) => {
     identificationNumber,
   } = req.body;
 
+  // Construct user details object
   const userDetails = {};
-
   if (fullName) userDetails.fullName = fullName;
   if (email) userDetails.email = email;
   if (phoneNumber) userDetails.phoneNumber = phoneNumber;
@@ -214,53 +214,83 @@ export const verify = expressAsyncHandler(async (req, res) => {
   if (identificationNumber)
     userDetails.identificationNumber = identificationNumber;
 
+  // Check if files are uploaded
   const document =
     req.files && req.files.identificationDocument
       ? req.files.identificationDocument.tempFilePath
       : null;
 
+  const photoPic =
+    req.files && req.files.photo ? req.files.photo.tempFilePath : null;
+
+  // Handle document upload
   if (document) {
     try {
-      const documentResult = await cloudinary.uploader.upload(
-        req.files.identificationDocument.tempFilePath,
-        {
-          use_filename: true,
-          folder: "CuraFlux-user-identificationDocument",
-          resource_type: "auto",
-        }
-      );
+      const documentResult = await cloudinary.uploader.upload(document, {
+        use_filename: true,
+        folder: "CuraFlux-user-identificationDocument",
+        resource_type: "auto",
+      });
 
       userDetails.identificationDocument = documentResult.secure_url;
-      fs.unlinkSync(document);
+      fs.unlinkSync(document); // Remove temp file after upload
     } catch (error) {
-      console.error("Error uploading document to Cloudinary:", error);
+      console.error("Error uploading identification document:", error);
       return res
         .status(500)
-        .json({ success: false, error: "Failed to upload document" });
+        .json({
+          success: false,
+          message: "Failed to upload identification document",
+        });
     }
   }
 
-  try {
-    const updateUserDetails = await User.findByIdAndUpdate(
-      { _id: userId },
-      userDetails,
-      { new: true, runValidators: true }
-    );
+  // Handle profile picture upload
+  if (photoPic) {
+    try {
+      const profileResult = await cloudinary.uploader.upload(photoPic, {
+        use_filename: true,
+        folder: "CuraFlux-official-profile",
+        resource_type: "auto",
+      });
 
-    if (!updateUserDetails) {
+      userDetails.photo = profileResult.secure_url;
+      fs.unlinkSync(photoPic); // Remove temp file after upload
+    } catch (error) {
+      console.error("Error uploading profile picture:", error);
+      return res
+        .status(500)
+        .json({ success: false, message: "Failed to upload profile picture" });
+    }
+  }
+
+  // Update user details
+  try {
+    const updatedUser = await User.findByIdAndUpdate(userId, userDetails, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!updatedUser) {
       return res
         .status(404)
-        .json({ success: false, error: "Details not found" });
+        .json({ success: false, message: "User not found" });
     }
 
-    res.status(200).json({ success: true, updateUserDetails });
+    return res.status(200).json({
+      success: true,
+      message: "User details updated successfully",
+      updatedUser,
+    });
   } catch (error) {
     console.error("Error updating user details:", error);
-    res
-      .status(500)
-      .json({ success: false, error: "Failed to update user details" });
+    return res.status(500).json({
+      success: false,
+      message: "Failed to update user details",
+    });
   }
 });
+
 
 export const getUsers = expressAsyncHandler(async (req, res) => {
   const user = await User.find();
