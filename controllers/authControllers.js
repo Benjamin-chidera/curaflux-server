@@ -69,6 +69,8 @@ export const signUp = expressAsyncHandler(async (req, res) => {
 // Sign In Handler
 export const signIn = expressAsyncHandler(async (req, res) => {
   const { email, password } = req.body;
+  console.log(password);
+  
 
   // Find user and validate password
   const user = await User.findOne({ email });
@@ -76,7 +78,8 @@ export const signIn = expressAsyncHandler(async (req, res) => {
     return res.status(400).json({ message: "User not found" });
   }
 
-  const isPasswordCorrect = bcrypt.compare(password, user.password);
+  const isPasswordCorrect = await bcrypt.compare(password, user.password);
+
   if (!isPasswordCorrect) {
     return res.status(400).json({ message: "Invalid credentials" });
   }
@@ -236,12 +239,10 @@ export const verify = expressAsyncHandler(async (req, res) => {
       fs.unlinkSync(document); // Remove temp file after upload
     } catch (error) {
       console.error("Error uploading identification document:", error);
-      return res
-        .status(500)
-        .json({
-          success: false,
-          message: "Failed to upload identification document",
-        });
+      return res.status(500).json({
+        success: false,
+        message: "Failed to upload identification document",
+      });
     }
   }
 
@@ -290,7 +291,6 @@ export const verify = expressAsyncHandler(async (req, res) => {
     });
   }
 });
-
 
 export const getUsers = expressAsyncHandler(async (req, res) => {
   const user = await User.find();
