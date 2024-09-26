@@ -7,6 +7,11 @@ import { sendEmail } from "../utils/sendVerificationOtp.js";
 import randomstring from "randomstring";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
+import {
+  generateForgotPasswordEmailTemplate,
+  generateOtpEmailTemplate,
+  generateWelcomeEmailTemplate,
+} from "../utils/emailTemplate.js";
 
 // Sign Up Handler
 export const signUp = expressAsyncHandler(async (req, res) => {
@@ -50,7 +55,7 @@ export const signUp = expressAsyncHandler(async (req, res) => {
   // Generate JWT token
   const token = jwt.sign(
     {
-      id: newUser._id,
+      userId: newUser._id,
       fullName: newUser.fullName,
       nickName: newUser.nickName,
       birthdate: newUser.birthdate,
@@ -66,6 +71,15 @@ export const signUp = expressAsyncHandler(async (req, res) => {
 
   // Generate and send OTP after saving user details
   await sendOTP(email);
+
+  const msg =
+    "Please complete all your necessary verifications the enjoy your shifts";
+
+  await sendEmail({
+    to: email,
+    subject: "Your Registration was success. Welcome to the Family 💖",
+    html: generateWelcomeEmailTemplate(msg),
+  });
 
   res
     .status(201)
@@ -92,7 +106,7 @@ export const signIn = expressAsyncHandler(async (req, res) => {
   // Generate JWT token
   const token = jwt.sign(
     {
-      id: user._id,
+      userId: user._id,
       fullName: user.fullName,
       nickName: user.nickName,
       birthdate: user.birthdate,
@@ -138,7 +152,7 @@ export const sendOTP = async (email) => {
     await sendEmail({
       to: email,
       subject: "Your OTP",
-      html: `<p>Your OTP is: <strong>${otp}</strong></p>`,
+      html: generateOtpEmailTemplate(otp),
     });
 
     // You can log the success or perform other actions here if needed
@@ -166,7 +180,10 @@ export const verifyOTP = async (req, res, next) => {
         .json({ success: true, message: "OTP verification successful" });
     } else {
       // OTP is invalid
-      res.status(400).json({ success: false, error: "Invalid OTP, Please enter the correct OTP" });
+      res.status(400).json({
+        success: false,
+        error: "Invalid OTP, Please enter the correct OTP",
+      });
     }
   } catch (error) {
     console.error("Error verifying OTP:", error);
@@ -308,4 +325,84 @@ export const getAUsers = expressAsyncHandler(async (req, res) => {
   const user = await User.findById({ _id: userId });
 
   res.status(200).json({ success: true, user });
+});
+
+export const forgottenPassword = expressAsyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new Error(`user not found`);
+  }
+
+  const token = jwt.sign(
+    {
+      userId: user._id,
+      fullName: user.fullName,
+      nickName: user.nickName,
+      birthdate: user.birthdate,
+      gender: user.gender,
+      role: user.role,
+      email: user.email,
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "10d",
+    }
+  );
+
+  const resetLink = `http://localhost:5173/reset-password/${token}`; //added in the frontend
+
+  const subject = "Password Reset Request";
+  const html = generateForgotPasswordEmailTemplate(resetLink);
+  const to = email;
+  try {
+    await sendEmail({ subject, html, to });
+    res.status(200).json({
+      success: true,
+      msg: "Password reset email sent successfully",
+      token,
+    });
+  } catch (error) {
+    console.error("Error sending email:", error);
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
+});
+
+export const resetPassword = expressAsyncHandler(async (req, res) => {
+  const { token } = req.params;
+
+  const { password } = req.body;
+
+  const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+  const userId = decodedToken.userId;
+
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new Error({ msg: "user not found" });
+  }
+
+  if (password.length < 6) {
+    return res
+      .status(400)
+      .json({ message: "Password must be at least 6 characters long" });
+  }
+
+  const hased = await bcrypt.hash(password, 10);
+
+  user.password = hased;
+
+  await user.save();
+
+  const msg = "You can click to login and enjoy your shift";
+
+  await sendEmail({
+    to: user.email,
+    subject: "Password was reset successful 🧑‍⚕️😷",
+    html: generateWelcomeEmailTemplate(msg),
+  });
+
+  res.status(200).json({ msg: "Password successfully changed", success: true });
 });
