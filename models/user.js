@@ -10,8 +10,8 @@ const UserSchema = new Schema(
     },
     fullName: { type: String, required: true },
     nickName: { type: String, required: true },
-    birthdate: { type: String, required: true },
-    gender: { type: String, required: true },
+    birthdate: { type: String },
+    gender: { type: String },
     photo: {
       type: String,
       default:
