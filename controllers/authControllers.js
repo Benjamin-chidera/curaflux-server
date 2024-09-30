@@ -233,7 +233,8 @@ export const verify = expressAsyncHandler(async (req, res) => {
     availableWork,
     availableTime,
     address,
-    nicNumber,
+    nmcnNumber,
+    mdcnNumber,
   } = req.body;
 
   // Construct user details object
@@ -254,7 +255,8 @@ export const verify = expressAsyncHandler(async (req, res) => {
   if (availableWork) userDetails.availableWork = availableWork;
   if (availableTime) userDetails.availableTime = availableTime;
   if (address) userDetails.address = address;
-  if (nicNumber) userDetails.nicNumber = nicNumber;
+  if (nmcnNumber) userDetails.nmcnNumber = nmcnNumber;
+  if (mdcnNumber) userDetails.mdcnNumber = mdcnNumber;
 
   // Check if files are uploaded
   const document =

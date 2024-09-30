@@ -32,7 +32,8 @@ const UserSchema = new Schema(
     availableWork: { type: String },
     availableTime: { type: String },
     address: { type: String },
-    nicNumber: { type: String },
+    nmcnNumber: { type: String },
+    mdcnNumber: { type: String },
   },
   {
     timestamps: true,
