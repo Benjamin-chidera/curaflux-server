@@ -14,8 +14,6 @@ const UserSchema = new Schema(
     gender: { type: String },
     photo: {
       type: String,
-      default:
-        "https://images.pexels.com/photos/2324837/pexels-photo-2324837.jpeg?auto=compress&cs=tinysrgb&w=600",
     },
     role: { type: String, enum: ["user", "admin"], default: "user" },
     phoneNumber: { type: String },
@@ -23,7 +21,18 @@ const UserSchema = new Schema(
     identificationType: { type: String },
     identificationNumber: { type: String },
     identificationDocument: { type: String },
-    // profile: { type: String },
+    // User profile
+
+    specialty: { type: String },
+    experience: { type: Number },
+    bio: { type: String },
+    certifications: {
+      type: [String],
+    },
+    availableWork: { type: String },
+    availableTime: { type: String },
+    address: { type: String },
+    nicNumber: { type: String },
   },
   {
     timestamps: true,

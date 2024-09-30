@@ -225,6 +225,15 @@ export const verify = expressAsyncHandler(async (req, res) => {
     linkedInUrl,
     identificationType,
     identificationNumber,
+
+    specialty,
+    experience,
+    bio,
+    certifications,
+    availableWork,
+    availableTime,
+    address,
+    nicNumber,
   } = req.body;
 
   // Construct user details object
@@ -238,6 +247,14 @@ export const verify = expressAsyncHandler(async (req, res) => {
   if (identificationType) userDetails.identificationType = identificationType;
   if (identificationNumber)
     userDetails.identificationNumber = identificationNumber;
+  if (specialty) userDetails.specialty = specialty;
+  if (experience) userDetails.experience = experience;
+  if (bio) userDetails.bio = bio;
+  if (certifications) userDetails.certifications = certifications;
+  if (availableWork) userDetails.availableWork = availableWork;
+  if (availableTime) userDetails.availableTime = availableTime;
+  if (address) userDetails.address = address;
+  if (nicNumber) userDetails.nicNumber = nicNumber;
 
   // Check if files are uploaded
   const document =
