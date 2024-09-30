@@ -73,11 +73,11 @@ export const signUp = expressAsyncHandler(async (req, res) => {
   await sendOTP(email);
 
   const msg =
-    "Please complete all your necessary verifications the enjoy your shifts";
+    "Please complete all your necessary verifications then enjoy your shifts";
 
   await sendEmail({
     to: email,
-    subject: "Your Registration was success. Welcome to the Family 💖",
+    subject: "Your Registration was successful. Welcome to the Family 💖",
     html: generateWelcomeEmailTemplate(msg),
   });
 
