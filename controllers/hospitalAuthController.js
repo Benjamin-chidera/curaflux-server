@@ -7,7 +7,11 @@ import { sendEmail } from "../utils/sendVerificationOtp.js";
 import randomstring from "randomstring";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
-import { generateForgotPasswordEmailTemplate, generateOtpEmailTemplate, generateWelcomeEmailTemplate } from "../utils/emailTemplate.js";
+import {
+  generateForgotPasswordEmailTemplate,
+  generateOtpEmailTemplate,
+  generateWelcomeEmailTemplate,
+} from "../utils/emailTemplate.js";
 
 export const signUp = expressAsyncHandler(async (req, res) => {
   const {
@@ -18,6 +22,7 @@ export const signUp = expressAsyncHandler(async (req, res) => {
     address,
     hospitalType,
     LicenseNumber,
+    role,
   } = req.body;
 
   // Check if HospitalAuth already exists
@@ -42,6 +47,7 @@ export const signUp = expressAsyncHandler(async (req, res) => {
     address,
     hospitalType,
     LicenseNumber,
+    role,
   });
   await newHospitalAuth.save();
 
@@ -55,6 +61,7 @@ export const signUp = expressAsyncHandler(async (req, res) => {
       address: newHospitalAuth.address,
       hospitalType: newHospitalAuth.hospitalType,
       LicenseNumber: newHospitalAuth.LicenseNumber,
+      role: newHospitalAuth.role,
     },
     process.env.JWT_SECRET,
     {
@@ -105,6 +112,7 @@ export const signIn = expressAsyncHandler(async (req, res) => {
       address: hospital.address,
       hospitalType: hospital.hospitalType,
       LicenseNumber: hospital.LicenseNumber,
+      role: hospital.role,
     },
     process.env.JWT_SECRET,
     {
@@ -225,6 +233,7 @@ export const forgottenPassword = expressAsyncHandler(async (req, res) => {
       address: hospital.address,
       hospitalType: hospital.hospitalType,
       LicenseNumber: hospital.LicenseNumber,
+      role: hospital.role,
     },
     process.env.JWT_SECRET,
     {
@@ -276,13 +285,13 @@ export const resetPassword = expressAsyncHandler(async (req, res) => {
 
   await user.save();
 
-   const msg = "You can click to login";
+  const msg = "You can click to login";
 
-   await sendEmail({
-     to: user.email,
-     subject: "Password was reset successful 🧑‍⚕️😷",
-     html: generateWelcomeEmailTemplate(msg),
-   });
+  await sendEmail({
+    to: user.email,
+    subject: "Password was reset successful 🧑‍⚕️😷",
+    html: generateWelcomeEmailTemplate(msg),
+  });
 
   res.status(200).json({ msg: "Password successfully changed", success: true });
 });

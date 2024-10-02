@@ -30,10 +30,14 @@ const hospitalAuthSchema = new Schema(
       type: String,
       required: true,
     },
+    role: {
+      type: String,
+      default: "healthcare",
+    },
   },
   {
     timestamps: true,
   }
 );
 
-export const HospitalAuth = mongoose.model("HospitalAuth", hospitalAuthSchema);
+export const HospitalAuth = mongoose.model("Healthcare", hospitalAuthSchema);
