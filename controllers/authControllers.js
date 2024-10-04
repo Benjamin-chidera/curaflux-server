@@ -12,6 +12,7 @@ import {
   generateOtpEmailTemplate,
   generateWelcomeEmailTemplate,
 } from "../utils/emailTemplate.js";
+import { HospitalAuth } from "../models/hospitalAuth.js";
 
 // Sign Up Handler
 export const signUp = expressAsyncHandler(async (req, res) => {
@@ -28,8 +29,22 @@ export const signUp = expressAsyncHandler(async (req, res) => {
 
   // Check if user already exists
   const existingUser = await User.findOne({ email });
+  const existingHospital = await HospitalAuth.findOne({ email }); //newly added
   if (existingUser) {
     return res.status(400).json({ message: "User already exists" });
+  }
+
+  if (existingHospital) {
+    return res
+      .status(400)
+      .json({ message: "This email is already in use by a hospital" }); //newly added
+  }
+
+  if (existingHospital && existingUser) {
+    //newly added
+    return res.status(400).json({
+      message: "Please use a different email for Healthcare and Locum",
+    });
   }
 
   if (password.length < 6) {
@@ -52,20 +67,18 @@ export const signUp = expressAsyncHandler(async (req, res) => {
   });
   await newUser.save();
 
-  // Generate JWT token
-  const token = jwt.sign(
+  // Generate JWT locumToken
+  const locumToken = jwt.sign(
     {
       userId: newUser._id,
-      fullName: newUser.fullName,
+
       nickName: newUser.nickName,
-      birthdate: newUser.birthdate,
-      gender: newUser.gender,
+
       role: newUser.role,
-      email: newUser.email,
     },
     process.env.JWT_SECRET,
     {
-      expiresIn: "1h",
+      expiresIn: "30d",
     }
   );
 
@@ -83,7 +96,7 @@ export const signUp = expressAsyncHandler(async (req, res) => {
 
   res
     .status(201)
-    .json({ success: true, message: "Successful registration", token });
+    .json({ success: true, message: "Successful registration", locumToken });
 });
 
 // Sign In Handler
@@ -103,24 +116,24 @@ export const signIn = expressAsyncHandler(async (req, res) => {
     return res.status(400).json({ message: "Invalid credentials" });
   }
 
-  // Generate JWT token
-  const token = jwt.sign(
+  // Generate JWT locumToken
+  const locumToken = jwt.sign(
     {
       userId: user._id,
-      fullName: user.fullName,
+
       nickName: user.nickName,
-      birthdate: user.birthdate,
-      gender: user.gender,
+
       role: user.role,
-      email: user.email,
     },
     process.env.JWT_SECRET,
     {
-      expiresIn: "1h",
+      expiresIn: "30d",
     }
   );
 
-  res.status(200).json({ message: "Successful login", token, success: true });
+  res
+    .status(200)
+    .json({ message: "Successful login", locumToken, success: true });
 });
 
 // Generate OTP
@@ -355,15 +368,13 @@ export const forgottenPassword = expressAsyncHandler(async (req, res) => {
     throw new Error(`user not found`);
   }
 
-  const token = jwt.sign(
+  const locumToken = jwt.sign(
     {
       userId: user._id,
-      fullName: user.fullName,
+
       nickName: user.nickName,
-      birthdate: user.birthdate,
-      gender: user.gender,
+
       role: user.role,
-      email: user.email,
     },
     process.env.JWT_SECRET,
     {
@@ -371,7 +382,7 @@ export const forgottenPassword = expressAsyncHandler(async (req, res) => {
     }
   );
 
-  const resetLink = `http://localhost:5173/reset-password/${token}`; //added in the frontend
+  const resetLink = `http://localhost:5173/reset-password/${locumToken}`; //added in the frontend
 
   const subject = "Password Reset Request";
   const html = generateForgotPasswordEmailTemplate(resetLink);
@@ -381,7 +392,7 @@ export const forgottenPassword = expressAsyncHandler(async (req, res) => {
     res.status(200).json({
       success: true,
       msg: "Password reset email sent successfully",
-      token,
+      locumToken,
     });
   } catch (error) {
     console.error("Error sending email:", error);
@@ -390,12 +401,12 @@ export const forgottenPassword = expressAsyncHandler(async (req, res) => {
 });
 
 export const resetPassword = expressAsyncHandler(async (req, res) => {
-  const { token } = req.params;
+  const { locumToken } = req.params;
 
   const { password } = req.body;
 
-  const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-  const userId = decodedToken.userId;
+  const decodedlocumToken = jwt.verify(locumToken, process.env.JWT_SECRET);
+  const userId = decodedlocumToken.userId;
 
   const user = await User.findById(userId);
 

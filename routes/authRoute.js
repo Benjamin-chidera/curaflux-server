@@ -22,6 +22,6 @@ router.patch("/verify/:userId", verify);
 router.get("/users", getUsers);
 router.get("/user/:userId", getAUsers);
 router.post("/forgot-Password", forgottenPassword);
-router.patch("/reset-Password/:token", resetPassword);
+router.patch("/reset-Password/:locumToken", resetPassword);
 
 export default router;

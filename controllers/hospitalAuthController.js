@@ -12,6 +12,7 @@ import {
   generateOtpEmailTemplate,
   generateWelcomeEmailTemplate,
 } from "../utils/emailTemplate.js";
+import User from "../models/user.js";
 
 export const signUp = expressAsyncHandler(async (req, res) => {
   const {
@@ -27,8 +28,23 @@ export const signUp = expressAsyncHandler(async (req, res) => {
 
   // Check if HospitalAuth already exists
   const existingHospital = await HospitalAuth.findOne({ email });
+  const existingUser = await User.findOne({ email }); //newly added
+
   if (existingHospital) {
     return res.status(400).json({ message: "Hospital email already exists" });
+  }
+
+  if (existingUser) {
+    //newly added
+    return res
+      .status(400)
+      .json({ message: "This email is already in use by a locum" });
+  }
+
+  if (existingHospital && existingUser) {
+    return res.status(400).json({
+      message: "Please use a different email for Healthcare and Locum",
+    });
   }
 
   if (password.length < 6) {
@@ -51,21 +67,16 @@ export const signUp = expressAsyncHandler(async (req, res) => {
   });
   await newHospitalAuth.save();
 
-  // Generate JWT token
-  const token = jwt.sign(
+  // Generate JWT healthcareToken
+  const healthcareToken = jwt.sign(
     {
       hospitalId: newHospitalAuth._id,
       hospitalName: newHospitalAuth.hospitalName,
-      email: newHospitalAuth.email,
-      phoneNumber: newHospitalAuth.phoneNumber,
-      address: newHospitalAuth.address,
-      hospitalType: newHospitalAuth.hospitalType,
-      LicenseNumber: newHospitalAuth.LicenseNumber,
       role: newHospitalAuth.role,
     },
     process.env.JWT_SECRET,
     {
-      expiresIn: "1h",
+      expiresIn: "30d",
     }
   );
 
@@ -81,9 +92,11 @@ export const signUp = expressAsyncHandler(async (req, res) => {
     html: generateWelcomeEmailTemplate(msg),
   });
 
-  res
-    .status(201)
-    .json({ success: true, message: "Successful registration", token });
+  res.status(201).json({
+    success: true,
+    message: "Successful registration",
+    healthcareToken,
+  });
 });
 
 export const signIn = expressAsyncHandler(async (req, res) => {
@@ -102,25 +115,22 @@ export const signIn = expressAsyncHandler(async (req, res) => {
     return res.status(400).json({ message: "Invalid hospital credentials" });
   }
 
-  // Generate JWT token
-  const token = jwt.sign(
+  // Generate JWT healthcareToken
+  const healthcareToken = jwt.sign(
     {
       hospitalId: hospital._id,
       hospitalName: hospital.hospitalName,
-      email: hospital.email,
-      phoneNumber: hospital.phoneNumber,
-      address: hospital.address,
-      hospitalType: hospital.hospitalType,
-      LicenseNumber: hospital.LicenseNumber,
       role: hospital.role,
     },
     process.env.JWT_SECRET,
     {
-      expiresIn: "1h",
+      expiresIn: "30d",
     }
   );
 
-  res.status(200).json({ message: "Successful login", token, success: true });
+  res
+    .status(200)
+    .json({ message: "Successful login", healthcareToken, success: true });
 });
 
 // Generate OTP
@@ -224,15 +234,10 @@ export const forgottenPassword = expressAsyncHandler(async (req, res) => {
     throw new Error(`hospital not found`);
   }
 
-  const token = jwt.sign(
+  const healthcareToken = jwt.sign(
     {
       hospitalId: hospital._id,
       hospitalName: hospital.hospitalName,
-      email: hospital.email,
-      phoneNumber: hospital.phoneNumber,
-      address: hospital.address,
-      hospitalType: hospital.hospitalType,
-      LicenseNumber: hospital.LicenseNumber,
       role: hospital.role,
     },
     process.env.JWT_SECRET,
@@ -241,7 +246,7 @@ export const forgottenPassword = expressAsyncHandler(async (req, res) => {
     }
   );
 
-  const resetLink = `http://localhost:5173/admin/reset-password/${token}`; //added in the frontend
+  const resetLink = `http://localhost:5173/admin/reset-password/${healthcareToken}`; //added in the frontend
 
   const subject = "Password Reset Request";
   const html = generateForgotPasswordEmailTemplate(resetLink);
@@ -251,7 +256,7 @@ export const forgottenPassword = expressAsyncHandler(async (req, res) => {
     res.status(200).json({
       success: true,
       msg: "Password reset email sent successfully",
-      token,
+      healthcareToken,
     });
   } catch (error) {
     console.error("Error sending email:", error);
@@ -260,12 +265,15 @@ export const forgottenPassword = expressAsyncHandler(async (req, res) => {
 });
 
 export const resetPassword = expressAsyncHandler(async (req, res) => {
-  const { token } = req.params;
+  const { healthcareToken } = req.params;
 
   const { password } = req.body;
 
-  const decodedToken = jwt.verify(token, process.env.TOKEN);
-  const userId = decodedToken.userId;
+  const decodedhealthcareToken = jwt.verify(
+    healthcareToken,
+    process.env.healthcareToken
+  );
+  const userId = decodedhealthcareToken.userId;
 
   const user = await HospitalAuth.findById(userId);
 

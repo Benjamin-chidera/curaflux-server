@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import authRoutes from "./routes/authRoute.js";
 import hospitalRoute from "./routes/hospitalRoute.js";
+import applicationRoute from "./routes/applicationRoute.js";
 import { errorHandler } from "./middleware/errorHandlers.js";
 import { v2 as cloudinary } from "cloudinary";
 import fileupload from "express-fileupload";
@@ -34,6 +35,7 @@ app.get("/", (req, res) => {
 });
 app.use("/auth", authRoutes);
 app.use("/hospital", hospitalRoute);
+app.use("/shift", applicationRoute);
 
 const startServer = async () => {
   try {

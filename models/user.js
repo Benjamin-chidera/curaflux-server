@@ -15,7 +15,7 @@ const UserSchema = new Schema(
     photo: {
       type: String,
     },
-    role: { type: String, enum: ["locum", "admin"], default: "locum" },
+    role: { type: String, default: "locum" },
     phoneNumber: { type: String },
     linkedInUrl: { type: String },
     identificationType: { type: String },
