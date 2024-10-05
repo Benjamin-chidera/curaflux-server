@@ -135,7 +135,7 @@ export const searchShift = async (req, res) => {
       queryObj.location = { $regex: location, $options: "i" };
     }
 
-    const search = await Shifts.find(queryObj);
+    const search = await Shifts.find(queryObj).populate("hospital");
 
     if (search.length === 0) {
       return res

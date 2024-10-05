@@ -4,6 +4,7 @@ import {
   applyForShift,
   getAllApplications,
   getApplicationsForHospital,
+  getASingleApplication,
   rejectApplication,
 } from "../controllers/applicationController.js";
 import { permission, protect } from "../middleware/auth.js";
@@ -18,6 +19,8 @@ router.get(
   permission("healthcare"),
   getApplicationsForHospital
 );
+
+router.get("/applicants/:userId", getASingleApplication);
 
 router.patch("/application/accepted/:applicationId", acceptApplication);
 

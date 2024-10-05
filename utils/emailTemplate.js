@@ -61,7 +61,6 @@ export const generateForgotPasswordEmailTemplate = (resetLink) => {
   `;
 };
 
-
 export const generateResetPasswordEmailTemplate = (msg) => {
   return `
     <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4;">
@@ -76,6 +75,45 @@ export const generateResetPasswordEmailTemplate = (msg) => {
         </div>
         <div style="text-align: center; margin-top: 30px;">
           <a href="https://curaflux.netlify.app/login" style="background-color: #4CAF50; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Visit Our Site</a>
+        </div>
+      </div>
+    </div>
+  `;
+};
+
+export const acceptedMessage = (msg) => {
+  return `
+    <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4;">
+      <div style="max-width: 600px; margin: auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <img src="https://curaflux.netlify.app/assets/logo-DH0Xceen.png" alt="Logo" style="max-width: 150px;" />
+        </div>
+        <h2 style="text-align: center; color: #333;">Enjoy your shift</h2>
+        <p style="text-align: center; font-size: 16px; color: #555;">Welcome to the family</p>
+        <div style="text-align: center; margin: 20px 0;">
+          <span style="font-size: 30px; color: #4CAF50; font-weight: bold;">${msg}</span>
+        </div>
+        <div style="text-align: center; margin-top: 30px;">
+          <a href="https://curaflux.netlify.app/" style="background-color: #4CAF50; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Visit Our Site</a>
+        </div>
+      </div>
+    </div>
+  `;
+};
+
+export const rejectedMessage = (msg) => {
+  return `
+    <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4;">
+      <div style="max-width: 600px; margin: auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <img src="https://curaflux.netlify.app/assets/logo-DH0Xceen.png" alt="Logo" style="max-width: 150px;" />
+        </div>
+      
+        <div style="text-align: center; margin: 20px 0;">
+          <span style="font-size: 30px; color: #4CAF50; font-weight: bold;">${msg}</span>
+        </div>
+        <div style="text-align: center; margin-top: 30px;">
+          <a href="https://curaflux.netlify.app/" style="background-color: #4CAF50; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Visit Our Site</a>
         </div>
       </div>
     </div>

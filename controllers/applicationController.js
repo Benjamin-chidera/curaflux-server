@@ -2,6 +2,8 @@ import { Application } from "../models/application.js";
 import { Shifts } from "../models/hospital.js";
 import expressAsync from "express-async-handler";
 import User from "../models/user.js";
+import { sendEmail } from "../utils/sendVerificationOtp.js";
+import { acceptedMessage,  rejectedMessage } from "../utils/emailTemplate.js";
 
 export const applyForShift = expressAsync(async (req, res) => {
   const { shiftId, userId } = req.body;
@@ -115,6 +117,15 @@ export const getAllApplications = expressAsync(async (req, res) => {
   res.status(200).json({ success: true, applications });
 });
 
+export const getASingleApplication = expressAsync(async (req, res) => {
+  const { userId } = req.params;
+  const user = await Application.findById(userId).populate("userId");
+
+  // console.log(user);
+
+  res.status(200).json({ success: true, user });
+});
+
 // accept shifts
 
 export const acceptApplication = async (req, res) => {
@@ -127,11 +138,20 @@ export const acceptApplication = async (req, res) => {
       { new: true }
     )
       .populate("userId", "name email")
-      .populate("hospitalId");
+      .populate("shiftId");
 
     if (!application) {
       return res.status(404).json({ message: "Application not found" });
     }
+    const userEmail = application.userId.email;
+
+    const msg = "Congratulations💖, you application was successful";
+
+    await sendEmail({
+      to: userEmail,
+      subject: "Your Application was successful. Welcome to the Family 💖",
+      html: acceptedMessage(msg),
+    });
 
     res.status(200).json({ message: "Application accepted", application });
   } catch (error) {
@@ -146,19 +166,27 @@ export const rejectApplication = async (req, res) => {
   const { applicationId } = req.params;
 
   try {
-    const application = await Application.findByIdAndUpdate(
-      applicationId,
-      { status: "rejected" },
-      { new: true }
-    )
-      .populate("userId", "name email")
-      .populate("hospitalId");
+    const application = await Application.findByIdAndDelete(applicationId).populate("userId", "-password"); // Deletes the application
 
     if (!application) {
       return res.status(404).json({ message: "Application not found" });
     }
+    const userEmail = application.userId.email;
 
-    res.status(200).json({ message: "Application rejected", application });
+   
+
+    const msg =
+      "Unfortunately we won't be processing your request at this time";
+
+    await sendEmail({
+      to: userEmail,
+      subject: "So sorry ",
+      html: rejectedMessage(msg),
+    });
+
+    res
+      .status(200)
+      .json({ message: "Application rejected and removed", applicationId });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
